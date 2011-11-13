@@ -1,0 +1,235 @@
+{% extends "courses/course_two_columns.html" %}
+
+{% block title %}{{ request.course }} - {{ assignment }}{% endblock title %}
+
+{% block extra-js-head %}
+<script type="text/javascript" src="/site_media/js/instructor/view_assignment.js"></script>
+{% endblock extra-js-head %}
+
+{% block sub-header %}
+	<a href="../" class="back"><img src="/site_media/pics/left-arrow-small.png" /><span>Back</span></a>
+	{% if assignment.type == 'o' %}
+		<a href='quiz/' class="quiz-link">Questions and Answers</a>
+	{% endif %}
+{% endblock sub-header %}
+
+
+{% block content-left %}
+
+	{% comment %}<h1><span id="assignment-header">{{ assignment }}</span></h1>{% endcomment %}
+
+	{% ifequal assignment.type 's' %}
+		<h2>Submissions</h2>
+		{% spaceless %}
+		<ul class="submissions">
+		{% for submission in submissions %}
+		<li class="submission {% if submission.status == 0 %}submitted{% else %}not-submitted{% endif %}">
+				<span class="submission-id">{{ submission.id }}</span>
+					
+				<table class="submission-table">
+					<tr>
+						<td class="submission-name-info">
+							<span class="student-name">{{ submission.user.get_full_name }}</span>
+							<p class="student-email">{{ submission.user.email }}</p>
+							<span class="submission-info">
+								<span class="submission-status">
+								{% if submission.status == 0 %}
+									Submitted: 
+								{% endif %}
+							
+								{% if submission.status == 1 %}
+									Graded: 
+								{% endif %}
+								</span>
+								<span class="submission-date">
+								{% if submission.status == 0 or submission.status == 1 %}
+									{{ submission.date|date:"D. N n, Y \a\t P" }}
+								{% endif %}
+								</span>
+							</span>
+						</td>
+						<td class="submission-form">
+							<form class="grade-submission-form" method="post">{% csrf_token %}
+								<input class="grade-text-input" type="text" name="score" value="{% if submission.score != None %}{{ submission.score }}{% endif %}" /><span class="submission-form-possible-score">/{{ assignment.get_possible_score }}</span>
+								<input type="submit" value="Grade" />
+								<span class="score-error"></span>
+							</form>
+						</td>
+						<td class="submission-view-link">
+							{% if submission.status == 0 or submission.status == 1 %}
+							<a href="" class="view-submission">View</a>
+							{% endif %}
+						</td>
+					</tr>
+				</table>
+				
+				<div class="submission-view">
+					<div class="submission-text">
+				{% if submission.text %}
+					<h3>Text</h3>
+					<p>{{ submission.text }}</p>
+				{% endif %}
+					</div>
+
+					<div class="submission-file-section">
+					<h3>Files</h3>
+					<ul class="file-list">
+					{% for file in submission.current_files %}
+						<li><a href="{{ file.link }}">{{ file }}</a></li>
+					{% empty %}
+						<li>Submission has no files.</li>
+					{% endfor %}
+					</ul>
+					</div>
+					
+					<div class="comment-section">
+					<p>Leave comment</p>
+					<textarea class="submission-comments" name="comments" cols="50" rows="10">{{ submission.comments }}</textarea>
+					</div>
+				</div>
+			</li>
+		{% endfor %}
+		</ul>
+		{% endspaceless %}
+	{% endifequal %}
+
+	{% if assignment.type == 'c' or assignment.type == 'o' %}
+		<h2>{% if assignment.type == 'c' %}Students{% else %}Completed Assignments{% endif %}</h2>
+	
+		<form action="" method="post" class="student-list-form">{% csrf_token %}
+			{% if assignment.type == 'o' %}
+				<a href="submissions/reset/" class="reset-all">Reset All</a>
+			{% endif %}
+			<input type="submit" value="Grade" />
+			{{ grade_formset.management_form }}
+			{% spaceless %}
+			<ul class="student-list">
+			{% for form in grade_formset.forms %}
+			{% with form.instance as submission %}
+				<li class="student">
+				{{ form.id }}
+				<span class="submission-id">{{ submission.id }}</span>
+				<table class="student-list-display">
+					<tr>
+						<td class="student-list-display-username">
+							<span class="username-display">{{ submission.user.get_full_name }}</span>
+							<span class="username">{{ submission.user.username }}</span>
+							<p class="student-email">{{ submission.user.email }}</p>
+						</td>
+						<td class="grade-input">
+							{{ form.score }}
+							<span class="possible-score-display">/{{ assignment.get_possible_score }}</span>
+							<span class="score-error">
+							{% for error in form.score.errors %}
+								{{ error }}
+							{% endfor %}
+							</span>
+						</td>
+						<td class="comment-display">
+							{% if assignment.type == 'c' %}
+							<a href="" class="leave-comment" onclick="">Comment</a>
+							{% else %}
+							<a href="" class="reset-submission">Reset</a>
+								{% for submission_id in has_submitted_quiz %}
+									{% if submission.id == submission_id %}
+									<a href="quiz/{{ submission.user_id }}/results/">Results</a>
+									{% endif %}
+								{% endfor %}
+							{% endif %}
+						</td>
+					</tr>
+				</table>
+				{{ form.text }}
+				{{ form.text.errors }}
+			</li>
+			{% endwith %}
+			{% endfor %}
+			{% endspaceless %}
+			</ul>
+			<input type="submit" value="Grade" />
+			<input type="hidden" name="submit_type" value="grades" />
+		</form>
+		
+	{% endif %}
+
+{% endblock content-left %}
+
+{% block content-right %}
+	<div class="update-assignment-section">
+	<h3>Update Assignment</h3>
+	<form id="assignment-update-form" class="add-assignment-form update-assignment-form" action="" method="post">{% csrf_token %}
+	{% for field in assignment_form.visible_fields %}
+		<div class="form-field">
+			{{ field.label_tag }}
+			{{ field }}
+			{% for error in field.errors %}
+			<span class="assignment-{{ field.name }}-errors">{{ error }}</span>
+			{% endfor %}
+		</div>
+	{% endfor %}
+	{% for field in assignment_form.hidden_fields %}
+		{{ field }}
+	{% endfor %}
+
+	<div class="add-assignment-input"><input id="assignment-update-submit" type="submit" value="Update" /></div>
+	<input type="hidden" name="submit_type" value="assignment" />
+	</form>
+	</div>
+
+	<div class="resources-section">
+	<h3>Resources</h3>
+	<ul class="resources">
+	{% for resource in resources %}
+		<li class="resource">
+			<span class="resource-name"><a href="{{ resource.get_url }}">{{ resource }}</a></span>
+			<span class="resource-id">{{ resource.id }}</span>
+		</li>
+	{% empty %}
+		<li>No resources</li>
+	{% endfor %}
+	</ul>
+
+
+	<form class="add-resource-form" method="post" action="" enctype="multipart/form-data">{% csrf_token %}
+		<div class="form-field">
+			<label>{{ resource_form.name.label_tag }}</label> {{ resource_form.name }}
+			{% for error in resource_form.name.errors %}
+				<span class="resource-name-error">{{ error }}</span>
+			{% endfor %}
+		</div>
+		<div class="form-field">
+			<label>{{ resource_form.type.label_tag }}</label> {{ resource_form.type }}
+			{% for error in resource_form.type.errors %}
+				<span class="resource-type-error">{{ error }}</span>
+			{% endfor %}
+		</div>
+		
+		
+		<div class="file-section">
+		<div class="form-field">
+			<label>{{ resource_form.file.label_tag }}</label>
+			<input type="file" name="file" class="add-resource-file" />
+			{% for error in resource_form.file.errors %}
+				<span class="resource-file-error">{{ error }}</span>
+			{% endfor %}
+		</div>
+		</div>
+		
+		
+		<div class="link-section">
+		<div class="form-field">
+			<label>{{ resource_form.url.label_tag }}</label> {{ resource_form.url }}
+			{% for error in resource_form.url.errors %}
+				<span class="resource-url-error">{{ error }}</span>
+			{% endfor %}
+		</div>
+		</div>
+
+		<div class="form-field">
+		<input type="submit" value="Add Resource" />
+		</div>
+		<input type="hidden" name="submit_type" value="resource" />
+	</form>
+
+</div>
+{% endblock content-right %}

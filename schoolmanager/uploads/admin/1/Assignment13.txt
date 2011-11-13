@@ -1,0 +1,51 @@
+Cory Hammon
+CMPT 251
+Dan Byrne
+Nov. 3, 2010
+
+Assignment 13
+
+1. The program took 14.937 second to finish.  The real time is the actual time spent in the program; the user time is the CPU time spent in the program.
+
+2. There is a greater amount of real time in the second commands than the first.  There is however around the same user time.  This could be, because the computer has to switch between the two running totals as it calculates them.
+
+3. Again, the real time is greater for each, explained by the context switching.  The user time for one process is actually slower than the others.  I don't know how to explain this…
+
+4.  More of the processes would have the same statistics with a greater amount of CPU's.  When entered, each program would run on its own processor, resulting in less context switching, and faster speeds.
+
+5.  There is a direct relationship between the amount of time I spend waiting, and the real time.  The more I wait, the greater real time is.
+
+6. 
+
+Original runtime: 1 minute 7.785 seconds
+
+Inline function mod_mult -- New runtime: 54.159 seconds speedup: 13.626 seconds
+
+Inline function mod_exp -- New runtime: 55.100 seconds speedup: -1.041 seconds
+
+Constant propagation -- New runtime: 55.047 seconds speedup: .053 seconds
+
+7. Inlining mod_mult produced the biggest speedup.  They made the code longer, and produced more duplicates of the same code, which makes it more tedious to read.
+
+8. 
+
+-O2 Speedup: 37 seconds
+-O3 Speedup: 41.661 seconds
+
+It makes more sense to let the compiler do it.  The compiler does it right every time, never messing up your program.  Although it does depend on the types of optimizations, some of which can only be done by the programmer.
+
+9.
+
+mod_mult
+
+883,236,340
+
+mod_mult
+
+84.85
+
+Since mod_mult is the most time consuming function, inlining would reduce the time spent in the function, thus speeding up the entire program significantly.
+
+No, it takes the same amount of time.
+
+It would not be able to give as much detailed information.  Since mod_mult is inlined, gprof would say the program spend roughly the same amount of time in each function.

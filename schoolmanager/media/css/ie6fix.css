@@ -1,0 +1,5 @@
+span.tabs-menu { margin-bottom: 0; }
+
+span.current-course { padding-top: 15px; }
+a.current-course-outer { background: none; }
+span.current-course-inner { color: white; background: none; cursor: pointer; text-decoration: underline; }

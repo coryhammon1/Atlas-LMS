@@ -1,0 +1,3 @@
+{% for field in form.visible_fields %}
+<p>{{ field.label_tag }}: {{ field }} <span id="group_{{ field.name }}_error"></span></p>
+{% endfor %}

@@ -1,0 +1,16 @@
+<body>
+<ul>
+{% for assignment in assignment_data %}
+	<li>
+		<span>{{ assignment.name }}</span>
+		{% if assignment.student %}
+		<span>{{ assignment.student.grade }}%</span>
+		<span>({{ assignment.student.letter_grade }})</span>
+		{% endif %}
+		<span>Avg:</span>
+		<span>{{ assignment.average.grade }}%</span>
+		<span>({{ assignment.average.letter_grade }})</span>
+	</li>
+{% endfor %}
+</ul>
+</body>

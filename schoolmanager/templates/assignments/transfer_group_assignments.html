@@ -1,0 +1,3 @@
+{% for field in form %}
+	{{ field.label_tag }} {{ field }} <span>{{ field.help_text }}</span>
+{% endfor %}

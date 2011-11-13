@@ -1,0 +1,25 @@
+<p class="choices-error"></p>
+{{ choice_formset.management_form }}
+<table>
+	<tr><th>Answer</th><th>Is Correct</th></tr>
+{% for form in choice_formset.forms %}
+	<tr class="choice">
+	{% for field in form.visible_fields %}
+		<td class="{{ field.name|slugify }}">
+			{{ field }}
+			{% if forloop.last %}
+			<a href="" class="delete-choice">delete</a>
+			{% endif %}
+		</td>
+	{% endfor %}
+	</tr>
+	
+	<tr>
+	{% for field in form.hidden_fields %}
+		<td>{{ field }}</td>
+	{% endfor %}
+	</tr>
+{% endfor %}
+</table>
+<div class="form-field"><a href="" class="add-answer-field">Add Another</a></div>
+<div class="form-field"><input type="submit" value="Save Answers" /></div>

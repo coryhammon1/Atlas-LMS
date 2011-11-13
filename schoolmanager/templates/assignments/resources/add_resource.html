@@ -1,0 +1,43 @@
+{% extends "base.html" %}
+
+{% block content %}
+<h1>Add Resource</h1>
+
+<form method="post" action="" enctype="multipart/form-data" >
+
+	{{ form.name.label_tag }}: {{ form.name }} {{ form.name.errors }}<br />
+	{{ form.type.label_tag }}: {{ form.type }} {{ form.type.errors }}<br />
+	
+	<div class="file-section">
+		{{ form.file.label_tag }}: {{ form.file }} {{ form.file.errors }}<br />
+	</div>
+
+	<div class="link-section">
+		{{ form.url.label_tag }}: {{ form.url }} {{ form.url.errors }}<br />
+	</div>
+
+	<input type="submit" value="Add Resource" />
+</form>
+
+{% endblock content %}
+
+{% block extra-script %}
+<script type="text/javascript">
+
+function switch_inputs(value){
+	var type = $("#id_type").val();
+	
+	if(type == "f"){
+		$(".file-section").show();
+		$(".link-section").hide();
+	}else{
+		$(".link-section").show();
+		$(".file-section").hide();
+	}
+}
+
+$("#id_type").bind('change ready', switch_inputs);
+$(document).ready(switch_inputs);
+
+</script>
+{% endblock extra-script %}

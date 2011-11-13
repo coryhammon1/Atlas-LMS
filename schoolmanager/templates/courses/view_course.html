@@ -1,0 +1,78 @@
+{% extends "courses/course_two_columns.html" %}
+
+{% block title %}{{ course }}{% endblock title %}
+
+{% block extra-js-head %}
+<script type="text/javascript" src="/site_media/js/view_course.js"></script>
+{% endblock extra-js-head %}
+
+{% block sub-header %}
+<div class="course-menu">
+	<span class="course-menu-item">
+		<a href="assignments/" class="go-to-assignments">Assignments</a>
+		{% if assignment_notification_count > 0 %}
+		<span class="course-notification-count">{{ assignment_notification_count }}</span>
+		{% endif %}
+	</span>
+	
+	{% if user.is_staff or user.is_superuser %}
+	<span class="course-menu-item">
+		<a href="grades/">Final Grades</a>
+	</span>
+	{% endif %}
+</div>
+{% endblock sub-header %}
+
+{% block content-left %}
+<div class="bulletin-board">
+<div class="add-bulletin-stand-in"><p>Click to add bulletin</p></div>
+<form class="add-bulletin-form" action="" method="post">{% csrf_token %}
+	<div class="form-field">
+		<label>Title</label>
+		<input class="add-bulletin-title" type="text" name="title" /><span class="title-error"></span>
+	</div>
+	<div class="form-field">
+		<textarea class="add-bulletin-text" name="text" cols="40" rows="7"></textarea><span class="text-error"></span>
+	</div>
+	<div class="form-field">
+		<input type="submit" value="Post Bulletin" /><a href="" class="hide-add-bulletin">Hide</a>
+	</div>
+</form>
+
+<ul class="bulletin-list"></ul>
+
+<div class="ajax-call-loading">
+	<img src="/site_media/pics/ajax-loader.gif" />
+</div>
+
+</div>
+
+{% endblock content-left %}
+
+{% block content-right %}
+
+{% if not request.user.is_superuser and not request.user.is_staff %}
+<div class="grade-section"></div>
+{% endif %}
+
+<div class="upcoming">
+	<h3>Upcoming</h3>
+	<div class="ajax-call-loading">
+		<img src="/site_media/pics/ajax-loader.gif" />
+	</div>
+</div>
+
+{% endblock content-right %}
+
+{% block extra-script %}
+<script type="text/javascript">
+$(document).ready(function(){
+	{% if not user.is_staff and not user.is_superuser %}
+		get_grade($(".grade-section"));
+	{% endif %}
+	
+	load_bulletin_data($(".bulletin-board"));
+	load_upcoming_data($(".upcoming"), "assignments/upcoming/");
+});
+</script>
+{% endblock extra-script %}

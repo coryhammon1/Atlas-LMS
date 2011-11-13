@@ -1,0 +1,45 @@
+{% extends "base.html" %}
+
+{% block title %}{{ request.user.get_full_name }} - Profile{% endblock title %}
+
+{% block content %}
+<h2>User Information</h2>
+<div class="profile-item username-item">
+	<label>Username</label><p class="profile-info">{{ request.user.username }}</p>
+</div>
+<div class="profile-item">
+	<label>Full Name</label><p class="profile-info">{{ request.user.get_full_name }}</p>
+</div>
+<div class="profile-item">
+	<form action="" method="post" class="profile-form">{% csrf_token %}
+	{% for field in profile_form %}
+	<div class="form-field">
+		<label>{{ field.label }}</label>{{ field }}
+		{% for error in field.errors %}
+			<span class="error">{{ error }}</span>
+		{% endfor %}
+	</div>
+	{% endfor %}
+		<div class="form-field">
+			<input type="submit" value="Update" />
+		</div>
+		<input type="hidden" name="form_type" value="profile" />
+	</form>
+</div>
+<div class="profile-item">
+	<form action="" method="post" class="profile-form">{% csrf_token %}
+	{% for field in password_form %}
+	<div class="form-field">
+		<label>{{ field.label }}</label>{{ field }}
+		{% for error in field.errors %}
+			<span class="error">{{ error }}</span>
+		{% endfor %}
+	</div>
+	{% endfor %}
+		<div class="form-field">
+			<input type="submit" value="Change" />
+		</div>
+		<input type="hidden" name="form_type" value="password" />
+	</form>
+</div>
+{% endblock content %}

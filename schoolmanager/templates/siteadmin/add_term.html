@@ -1,0 +1,22 @@
+{% extends "base.html" %}
+
+{% block content %}
+<h1>Add Term</h1>
+
+<form class="add-term-form" action="" method="post">
+<table>
+{% for field in form %}
+	<tr>
+		<td>{{ field.label_tag }}</td>
+		<td>{{ field }}</td>
+		{% if field.errors %}
+		<td>{% for error in fields.errors %}{{ error.as_text }}{% endfor %}</td>
+		{% else %}
+		<td>{{ field.help_text }}</td>
+		{% endif %}
+	</tr>
+{% endfor %}
+	<tr><td></td><td><input type="submit" value="Add term" /><input type="submit" name="_add_another" value="Save and add another"></tr>
+</table>
+</form>
+{% endblock content %}

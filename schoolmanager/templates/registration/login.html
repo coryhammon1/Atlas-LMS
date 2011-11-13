@@ -1,0 +1,24 @@
+{% extends "base.html" %}
+
+{% block title %}Login{% endblock title %}
+
+{% block content %}
+<div class="login-container">
+	<h2>Login</h2>
+	<form class="login-form" action="" method="post">{% csrf_token %}
+	{% if form.errors %}
+		<p>Username and password did not match.</p>
+	{% endif %}
+		{{ form.username.label_tag }} {{ form.username }}<br />
+		{{ form.password.label_tag }} {{ form.password }}<br />
+		<input type="submit" value="Login" /><a class="password-reset" href="/reset_password/">I forgot my password</a>
+		<input type="hidden" name="next" value="{{ next }}" />
+	</form>
+</div>
+{% endblock content %}
+
+{% block extra-script %}
+<script>
+$("#id_username").focus();
+</script>
+{% endblock extra-script %}

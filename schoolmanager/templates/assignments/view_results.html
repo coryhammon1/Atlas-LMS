@@ -1,0 +1,66 @@
+{% extends "courses/course_two_columns.html" %}
+
+{% block title %}{{ quiz_submission.submission.assignment }} - Quiz Results</title>{% endblock title %}
+
+{% block sub-header %}
+	{% if request.user.is_staff or request.user.is_superuser %}
+	<a href="../../../" class="back"><img src="/site_media/pics/left-arrow-small.png" /><span>Back</span></a>
+	{% else %}
+	<a href="../" class="back"><img src="/site_media/pics/left-arrow-small.png" /><span>Back</span></a>
+	{% endif %}
+{% endblock sub-header %}
+
+{% block content-left %}
+<h2>Quiz Results {% if request.user.is_staff or request.user.is_superuser %}for {{ student.get_full_name }}{% endif %}</h2>
+
+<div class="color-key">
+	<span class="correct">Answered Correctly</span> | <span class="wrong">Wrong Answer</span> | <span class="answer">Correct Answer</span>
+</div>
+
+<ul class="questions">
+{% for question in questions %}
+<li class="question">
+	<span class="question-text">{{ forloop.counter }}. {{ question.text }}</span>
+	<span class="question-points">({{ question.points }} pts.)</span>
+	<ul class="choices">
+	{% for choice in question.choices|dictsort:"id" %}
+		<li class="choice {% if choice.is_correct %}correct-choice{% endif %} {% if choice.is_correct and choice.chosen %}right-choice{% endif %} {% if not choice.is_correct and choice.chosen %}wrong-choice{% endif %}">{{ choice }}</li>
+	{% endfor %}
+	</ul>
+</li>
+{% endfor %}
+</ul>
+
+{% endblock content-left %}
+
+{% block content-right %}
+<div class="results-stats">
+	<h3>Questions Correct</h3>
+	<p class="correct-question-count"></span>
+</div>
+{% endblock content-right %}
+
+{% block extra-script %}
+<script>
+
+function count_correct_questions(){
+	var count = 0;
+	$.each($(".question"), function(i, element){
+		var question = $(element);
+		
+		if(question.find(".wrong-choice").length == 0){
+			if(question.find(".correct-choice").not(".right-choice").length == 0){
+				count += 1;
+			}
+		}
+	});
+	
+	return count;
+}
+
+$(document).ready(function(){
+	$(".correct-question-count").text(count_correct_questions());
+	$(".correct-question-count").append("/" + $(".question").length);
+});
+</script>
+{% endblock extra-script %}

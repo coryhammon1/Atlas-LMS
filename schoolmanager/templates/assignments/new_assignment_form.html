@@ -1,0 +1,15 @@
+<form action="" method="post" class="add-assignment-form">
+
+<div class="add-assignment-input"><label>Name</label><br />{{ form.name }}<span class="name-error"></span></div>
+<div class="add-assignment-input"><label>Due Date</label><br />
+	{{ form.due_date }}
+	<span class="due_date-error"></span>
+</div>
+<div class="add-assignment-input"><label>Possible Score</label><br />{{ form.possible_score }}<span class="possible_score-error"></span></div>
+<div class="add-assignment-input"><label>Description</label><br />{{ form.description }}<span class="description-error"></span></div>
+<div class="add-assignment-input"><label>Type</label><br />{{ form.type }}<span class="type-error"></span></div>
+
+<div class="add-assignment-input"><input type="submit" value="Add Assignment" /></div>
+
+<input type="hidden" name="group_id" value="0" />
+</form>

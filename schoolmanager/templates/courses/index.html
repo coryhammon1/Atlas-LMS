@@ -1,0 +1,30 @@
+{% extends "base.html" %}
+
+{% block title %}All Courses{% endblock title %}
+
+{% block sub-header %}
+<a href="../" class="back"><img src="/site_media/pics/left-arrow-small.png" /><span>Back</span></a>
+{% endblock sub-header %}
+
+{% block content %}
+
+{% regroup courses by term as terms %}
+<table class="all-courses">
+{% for terms in terms_chunked %}
+	<tr>
+	{% for term in terms %}
+		<td><span class="future-course-term">{{ term }}</span>
+			<ul class="future-course-list">
+			{% for course in term.course_list %}
+				<li class="future-course">
+					<a href="/courses/{{ course.get_url }}/" class="future-courses-course">{{ course.shortname }}</a>
+				</li>
+			{% endfor %}	
+			</ul>
+		</td>
+	{% endfor %}
+	</tr>
+{% endfor %}
+</table>
+
+{% endblock content %}

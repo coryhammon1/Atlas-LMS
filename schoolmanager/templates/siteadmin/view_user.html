@@ -1,0 +1,73 @@
+{% extends "siteadmin/siteadmin_two_columns.html" %}
+
+{% block title %}Administration - {{ user }}{% endblock title %}
+
+{% block extra-js-head %}
+<script type="text/javascript" src="/site_media/js/admin/admin.js"></script>
+<script type="text/javascript" src="/site_media/js/admin/view_user.js"></script>
+{% endblock extra-js-head %}
+
+{% block sub-header %}
+<a href="../" class="back"><img src="/site_media/pics/left-arrow-small.png" /><span>Back</span></a>
+{% endblock sub-header %}
+
+{% block content-left %}
+<h1>{{ vuser.get_full_name }}</h1>
+<ul class="user-courses">
+{% for term in terms %}
+	<li class="course-term">
+		<span class="course-term-title">{{ term.display }}</span>
+		<a href="" class="enroll-course-menu">Add Course</a>
+		<div class="tabbed-courses tabbed-list">
+			<div class="tabs">
+			{% for department in departments %}
+				<span class="tab">
+					<span class="tab-name">{{ department }}</span>
+					<div class="tab-content"></div>
+				</span>
+			{% endfor %}
+			</div>
+			<div class="tab-display"><p class="empty-tab">Select a tab above.</p></div>
+		</div>
+		<ul class="user-course-list">
+		{% for course in term.course_list %}
+			<li class="user-course">
+				<span class='course-name'>{{ course.shortname }}</span>
+				<span class='course-id'>{{ course.id }}</span>
+			</li>
+		{% endfor %}
+		</ul>
+	</li>
+{% endfor %}
+</ul>
+
+{% endblock content-left %}
+
+{% block content-right %}
+<div class="update-user">
+	<h3>Update User</h3>
+	<form class="update-user" method="post">{% csrf_token %}
+	{% for field in form %}
+		<div class="form-field">
+		{{ field.label_tag }} {{ field }}
+		{% for error in field.errors %}
+			<span class="error">{{ error }}</span>
+		{% endfor %}
+		</div>
+	{% endfor %}
+		<div class="form-field">
+			<input type="submit" value="Update" />
+		</div>
+	</form>
+</div>
+{% endblock content-right %}
+
+{% block extra-script %}
+<script>
+$(document).ready(function(){
+	$.each($(".tabbed-courses"), function(i, element){
+		make_tab(element);
+	});
+});
+</script>
+{% endblock %}

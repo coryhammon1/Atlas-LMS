@@ -1,0 +1,5 @@
+span.tabs-menu { margin: 0 0 0 5px; }
+
+span.current-course { margin-bottom: -6px; }
+a.current-course-outer { }
+span.current-course-inner { background-image: url('/site_media/pics/current-course-tab-right.jpg'); }

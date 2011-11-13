@@ -1,0 +1,95 @@
+{% extends "courses/course_two_columns.html" %}
+{% load display_choices_form %}
+
+{% block title %}{{ assignment }} - Questions and Answers</title>{% endblock title %}
+
+{% block extra-js-head %}
+<script type="text/javascript" src="/site_media/js/instructor/view_quiz.js"></script>
+{% endblock extra-js-head %}
+
+{% block sub-header %}
+<a href="../" class="back"><img src="/site_media/pics/left-arrow-small.png" /><span>Back</span></a>
+{% endblock sub-header %}
+
+{% block content-left %}
+	<h2>Assignment Questions and Answers</h2>
+	
+	{% spaceless %}
+	<ul class="questions">
+	{% for question in questions %}
+		<li class="question">
+			<span class="question-id">{{ question.id }}</span>
+			<div class="question-display">
+				<span class="question-text">{{ question }}</span>
+				<span class="question-points">({{ question.points }} pts.)</span>
+			</div>
+			<span class="question-type">{{ question.type }}</span>
+			<p class="question-type-display">
+				{% if question.type == 'm' %}
+				Check <b>one</b> correct answer.
+				{% else %}
+				Check <b>any combination</b> of correct answers.
+				{% endif %}
+			</p>
+			
+			<form class="choices" method="post">{% csrf_token %}
+				{% display_choices_form question.choice_formset %}
+			</form>
+		</li>
+	{% empty %}
+		<li class="no-questions">No questions...</li>
+	{% endfor %}
+	</ul>
+	{% endspaceless %}
+	<form class="add-question" method="post" action="">{% csrf_token %}
+	<table>
+		<tr>
+			{% for field in question_form %}
+				{% if field.name != 'text' %}
+				<td>{{ field.label_tag }} {{ field }} <span class="{{ field.name }}_error"></span></td>
+				{% endif %}
+			{% endfor %}
+		</tr>
+	</table>
+	
+	<div class="form-field text-field">
+		{{ question_form.text.label_tag }} {{ question_form.text }} <span class="{{ field.name }}_error"></span>
+	</div>
+	
+		<div class="form-field submit-field">
+			<input type="submit" value="Add Question" />
+		</div>
+	</form>		
+
+	<div class="blank_choice_formset" style="display: none">
+	{% display_choices_form blank_choice_formset %}
+	</div>
+{% endblock content-left %}
+
+{% block content-right %}
+<div class="update-quiz-section">
+	<h3>Update Quiz</h3>
+	<form action="" method="post">{% csrf_token %}
+	{% for field in form %}
+		<div class="form-field">
+			{{ field.label_tag }}
+			{{ field }}
+			<span class="form-field-errors">
+			{% for error in field.errors %}
+				{{ error }}
+			{% endfor %}
+			</span>
+			<p class="form-field-help-text">{{ field.help_text }}</p>
+		</div>
+	{% endfor %}
+		<div class="form-field">
+			<input type="submit" value="Update" />
+		</div>
+	</form>
+</div>
+
+<div class="total-points-section">
+	<h3>Total</h3>
+	<p class="total-points"></p>
+</div>
+{% endblock content-right %}

@@ -1,0 +1,121 @@
+{% extends "base.html" %}
+
+{% block title %}Administration - Courses{% endblock title %}
+
+{% block extra-js-head %}
+<script type="text/javascript" src="/site_media/js/admin/admin.js"></script>
+<script type="text/javascript" src="/site_media/js/admin/courses.js"></script>
+{% endblock extra-js-head %}
+
+{% block sub-header %}
+<a href="../" class="back"><img src="/site_media/pics/left-arrow-small.png" /><span>Back</span></a>
+{% endblock sub-header %}
+
+{% block content %}
+<div class="terms-section courses-column">
+	<p class="section-header">Terms <a href="" class="add-term">Add</a></p>
+	<form class="add-term" action="" method="post">{% csrf_token %}
+		<span class="form-error"></span>
+	{% for field in term_form %}
+		<div class="form-field">
+			<label>{{ field.label_tag }}</label> {{ field }}
+			<span class="help-text">{{ field.help_text }}</span>
+			<span class="{{ field.name }}-error">{{ error }}</span>
+		</div>
+	{% endfor %}
+		<div class="form-field">
+			<input type="submit" value="Add Term" />
+		</div>
+	</form>
+	<ul class="course-terms section-list">
+	{% for term in terms %}
+		<li class="term">
+			<span class="term-id">{{ term.id }}</span>
+			<span class="term-start">{{ term.start|date:"m/d/Y" }}</span>
+			<span class="term-end">{{ term.end|date:"m/d/Y" }}</span>
+			<a href="" class="term-display">{{ term }}</a>
+		</li>
+	{% endfor %}
+	</ul>
+</div>
+
+<div class="departments-section courses-column">
+	<p class="section-header">Departments <a href="" class="add-department">Add</a></p>
+	<form class="add-department" action="" method="post">{% csrf_token %}
+		<span class="form-error"></span>
+	{% for field in department_form %}
+		<div class="form-field">
+			{{ field.label_tag }} {{ field }}
+			<span class="help-text">{{ field.help_text }}</span>
+			<span class="{{ field.name }}-error">{{ error }}</span>
+		</div>
+	{% endfor %}
+		<div class="form-field">
+			<input type="submit" value="Add Department" />
+		</div>
+	</form>
+	<p class="department-selection-not-complete">Select a term.</p>
+	<ul class="course-departments section-list">
+	{% for department in departments %}
+		<li class="department">
+			<span class="department-id">{{ department.id }}</span>
+			<a href="" class="department-display">{{ department }}</a>
+		</li>
+	{% endfor %}
+	</ul>
+</div>
+
+<div class="courses-section courses-column">
+	<p class="section-header">Courses <a href="" class="add-course">Add</a></p>
+	<form class="add-course" action="" method="post">{% csrf_token %}
+		<span class="form-error"></span>
+	{% for field in course_form %}
+		<div class="form-field">
+			{{ field.label_tag }} {{ field }}
+			<span class="help-text">{{ field.help_text }}</span>
+			<span class="{{ field.name }}-error">{{ error }}</span>
+		</div>
+	{% endfor %}
+		<div class="form-field">
+			<input type="submit" value="Add Course" />
+		</div>
+	</form>
+	<p class="selection-not-complete">Select a department.</p>
+</div>
+{% endblock content %}
+
+{% block extra-script %}
+<script>
+$(document).ready(function(){
+
+	$("input[name=start]").datepicker();
+	$("input[name=end]").datepicker();
+	
+	if(sessionStorage){
+		var prev_term = sessionStorage.getItem('term');
+		var prev_department = sessionStorage.getItem('department');
+		
+		if(prev_term){
+			$(".term-display:contains('" + prev_term + "')").addClass("selected-term");
+			$(".course-departments").show();
+			$(".select-term").hide();
+			$("a.add-department").show();
+			$(".department-selection-not-complete").hide();
+		}else{
+			$(".selection-not-complete").text("Select a term.");
+		}
+		
+		if(prev_department){
+			$(".course-departments").show();
+			$("a.add-department").show();
+			$(".select-term").hide();
+			$(".department-display:contains('" + prev_department + "')").addClass("selected-department");
+		}
+		
+		if(prev_term && prev_department){
+			get_partial_course_list(prev_term, prev_department);
+		}
+	}
+});
+</script>
+{% endblock extra-script %}

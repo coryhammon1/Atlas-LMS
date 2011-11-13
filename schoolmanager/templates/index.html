@@ -1,0 +1,64 @@
+{% extends "base.html" %}
+{% load listextensions %}
+
+{% block title %}Home{% endblock title %}
+
+{% block extra-js-head %}
+<script type="text/javascript" src="/site_media/js/index.js"></script>
+{% endblock extra-js-head %}
+
+{% block content %}
+<a href="/courses/" class="all-courses">All My Courses</a>
+<div class="all-courses"></div>
+
+{% if request.user.current_courses %}
+	{% if not is_ie6 %}
+<a href="" class="move-stream-left"><img src="/site_media/pics/left-arrow.png" /></a>
+<a href="" class="move-stream-right"><img src="/site_media/pics/right-arrow.png" /></a>
+
+<div class="course-stream-wrapper">
+<div class="course-streams" style="width: {% widthratio request.user.current_courses|evenlength 2 150 %}%">
+{% for course in request.user.current_courses %}
+<div class="course-stream-section stream-{{ forloop.counter0 }}">
+	<p class="course-stream-name">{{ course }}</p>
+	<span class="course-url">{{ course.get_url }}</span>
+	<ul class="course-stream">
+		<div class="ajax-call-loading">
+			<img src="/site_media/pics/ajax-loader.gif" />
+		</div>
+	</ul>
+</div>
+{% endfor %}
+	<div class="course-streams-footer"></div>
+</div>
+<div class="course-stream-wrapper-footer"></div>
+</div>
+	{% else %}
+		{% for course in request.user.current_courses %}
+		<div class="course-stream-section" style="width: 100%; clear: both;">
+			<p class="course-stream-name">{{ course }}</p>
+			<span class="course-url">{{ course.get_url }}</span>
+			<ul class="course-stream">
+				<div class="ajax-call-loading">
+					<img src="/site_media/pics/ajax-loader.gif" />
+				</div>
+			</ul>
+		</div>
+		{% endfor %}
+	{% endif %}
+{% endif %}
+{% endblock content %}
+
+{% block extra-script %}
+<script type="text/javascript">
+$(window).resize(function(){
+	{% if not is_ie6 %}adjust_stream_widths(){% endif %};
+});
+
+$(window).load(function(){
+	{% if not is_ie6 %}adjust_stream_widths(){% endif %};
+});
+
+message_display_time = 10000;
+</script>
+{% endblock extra-script %}

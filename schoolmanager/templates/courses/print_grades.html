@@ -1,0 +1,46 @@
+<html>
+<head>
+<title>{{ course }} - Grades</title>
+<style>
+* { margin: 0; padding: 0; border: none; }
+body { width: 8.5in; padding: 0; }
+
+table { width: 100%; }
+h1 { text-align: center; }
+
+p.course-info { text-align: center; font-weight: bold; }
+p.instructor { text-align: center; font-weight: bold; }
+
+tr.highlighted { background-color: #e8e8ec; }
+
+th { font-size: 20px; }
+
+td.grade-name { font-size: 18px; }
+td.grade-grade { width: 10%; text-align: center; font-weight: bold; }
+td.grade-percent { width: 13%; text-align: right; }
+
+</style>
+</head>
+
+<body>
+<h1>{{ course }} Grades</h1>
+<p class="course-info">
+	{{ course.shortname }} {{ course.term }}
+</p>
+<p class="instructor">
+{% for instructor in instructors %}
+	{{ instructor.get_full_name }}{% if not forloop.last %},&nbsp;{% endif %}
+{% endfor %}
+</p>
+<table class="grades">
+	<tr><th style="text-align: left">Student</th><th>Grade</th><th style="text-align: right">Percentage</th></tr>
+	{% for student in students %}
+	<tr class="{% cycle 'highlighted' '' %}">
+		<td class="grade-name">{{ student.last_name }}, {{ student.first_name }}</td>
+		<td class="grade-grade">{{ student.grade }}</td>
+		<td class="grade-percent">{{ student.percent }}%</td>
+	</tr>
+	{% endfor %}
+</table>
+</body>
+</html>

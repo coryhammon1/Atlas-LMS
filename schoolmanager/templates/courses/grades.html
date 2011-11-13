@@ -1,0 +1,66 @@
+{% extends "courses/course_two_columns.html" %}
+
+{% block title %}{{ request.course }} - Grades{% endblock title %}
+
+{% block sub-header %}
+<a href="../" class="back"><img src="/site_media/pics/left-arrow-small.png" /><span>Back</span></a>
+{% endblock sub-header %}
+
+{% block content-left %}
+<h2>Grades</h2>
+
+<form action="" method="post" class="grades">{% csrf_token %}
+	<table class="grades">
+		<tr><th style="text-align: left">Student</th><th>Grade</th><th>Percentage</th></tr>
+	{% for field in grading_form %}
+		<tr class="{% cycle 'grade-row-grayed' 'grade-row-white' %}">
+			<td><label>{{ field.student_name }}</label></td>
+			<td class="grade-field-and-text">{{ field }} <span class="grade-help-text">({{ field.help_text }})</span></td>
+			<td class="percent">{{ field.percent }}%</td>
+		</tr>
+	{% endfor %}
+	</table>
+	<div class="form-field">
+		<input type="submit" value="Submit" />
+		<input type="submit" value="Submit and Print" />
+	</div>
+	<input type="hidden" name="form_name" value="grading" />
+</form>
+
+{% endblock content-left %}
+
+{% block content-right %}
+<div class="grading-scale-section">
+	<h3>Grading Scale</h3>
+	<form action="" method="post" class="grading-scale">{% csrf_token %}
+		<table>
+			<tr><th>Grade</td><th>Cut-Off</td></tr>
+			{% for field in scale_form %}
+			<tr>
+				<td>{{ field.label_tag }}</td><td>{{ field }}</td>
+				<td>{{ field.help_text }}</td>
+				{% for error in field.errors %}
+				<td>{{ error }}</td>
+				{% endfor %}
+			</tr>
+			{% endfor %}
+		</table>
+		<input type="submit" value="Change" />
+		<input type="hidden" name="form_name" value="scale" />
+	</form>
+</div>
+{% endblock content-right %}
+
+{% block extra-script %}
+<script>
+$("input[value='Submit and Print']").live('click', function(){
+	var form = $(this).parents("form");
+	form.append("<input type='hidden' name='print' value='' />");
+});
+
+$("input[value='Submit']").live('click', function(){
+	var form = $(this).parents("form");
+	form.find("input[name='print']").remove();
+});
+</script>
+{% endblock extra-script %}

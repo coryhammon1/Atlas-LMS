@@ -1,0 +1,6 @@
+<div class="add-question-fields">
+{% for field in form %}
+	{{ field.label_tag }}: {{ field }} <span class="{{ field.name }}_error error"></span><br />
+{% endfor %}
+<input type="submit" value="Add Question" />
+</div>

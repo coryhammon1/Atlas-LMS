@@ -1,0 +1,84 @@
+{% extends "courses/course_two_columns.html" %}
+
+{% block title %}{{ assignment }} - Quiz{% endblock title %}
+
+{% block extra-js-head %}
+<script type="text/javascript" src="/site_media/js/student.js"></script>
+{% endblock extra-js-head %}
+
+{% block content-left %}
+<h1>Take Quiz</h1>
+
+<noscript>
+	<p class="javascript-disabled-error">
+	In order to take this quiz, javascript must be enabled.<br /><br />
+	<span>(If you do not know how to turn on javascript, search "how to enable javascript" in google, or another search engine.)</span>
+	</p>
+</noscript>
+
+<form action="" method="post" class="quiz">{% csrf_token %}
+{% for field in form %}
+	<div class="form-field">
+		<label>{{ forloop.counter }}. {{ field.label }} <span class="question-points">({{ field.points }} pts.)</span></label>
+		{{ field.errors }}
+		{% if field.help_text %}
+		<span class="quiz-help-text">{{ field.help_text }}</span>
+		{% endif %}
+		{{ field }}
+	</div>
+{% endfor %}
+<div class="form-field">
+	<input type="submit" value="Submit" />
+</div>
+</form>
+{% endblock content-left %}
+
+{% block content-right %}
+<div class="time-left-section">
+	<h3>Time Left</h3>
+	<p class="time-left">{% if not quiz.time %}Unlimited{% endif %}</p>
+</div>
+{% endblock content-right %}
+
+{% block extra-script %}
+<script>
+function get_minute_display(seconds){
+	var min = Math.floor(seconds/60);
+	var sec = seconds % 60;
+	
+	var display = min + ":"
+	if(sec < 10){
+		display += "0" + sec
+	}else{
+		display += sec
+	}
+	
+	return display;
+}
+
+function countdown(time, element, endCallback){ //time in seconds
+	element.innerHTML = get_minute_display(time);
+	
+	if(time == 0){
+		endCallback();
+		return;
+	}
+	
+	setTimeout(function(){
+		countdown(time - 1, element, endCallback);
+	}, 1000); //call countdown in 1 second
+}
+
+$(document).ready(function(){
+	$(".javascript-disabled-error").hide();
+	$("form.quiz").show();
+
+	{% if quiz.time %}
+		countdown({{ quiz.time }} * 60, $(".time-left")[0], function(){
+			alert("Time has run out. Quiz will be submitted automatically.");
+			$("form.quiz").submit();
+		});
+	{% endif %}
+});
+</script>
+{% endblock extra-script %}

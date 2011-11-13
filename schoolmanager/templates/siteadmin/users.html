@@ -1,0 +1,85 @@
+{% extends "siteadmin/siteadmin_two_columns.html" %}
+{% load stringextensions %}
+
+{% block title %}Administration - Users{% endblock title %}
+
+{% block extra-js-head %}
+<script type="text/javascript" src="/site_media/js/admin/admin.js"></script>
+<script type="text/javascript" src="/site_media/js/admin/users.js"></script>
+{% endblock extra-js-head %}
+
+{% block sub-header %}
+<a href="../" class="back"><img src="/site_media/pics/left-arrow-small.png" /><span>Back</span></a>
+{% endblock sub-header %}
+
+{% block content-left %}
+<ul class="user-sections">
+{% for type in user_types %}
+	<li class="{{ type|lower|slice:":-1" }}-users users-section">
+		<span class="user-grouper">{{ type }}</span>
+		<a href="" class="add-user">Add {{ type|slice:":-1" }}</a>
+		<form class="add-user">
+			<span class="form-error"></span>
+		{% for field in form.visible_fields %}
+			<div class="form-field">
+				{{ field.label_tag }} {{ field }}
+				<span class="help-text">{{ field.help_text }}</span>
+				<span class="{{ field.name }}-error"></span>
+			</div>
+		{% endfor %}
+			<div class="form-field">
+				<input type="submit" value="Add {{ type|slice:":-1" }}" />
+			</div>
+			<input type="hidden" name="user_type" value="{{ type|lower|slice:":-1" }}" />
+		</form>
+		<div class="tabbed-list">
+			<div class="tabs">
+			{% for letter in "ABCDEFGHIJKLMNOPRSTUVWXYZ" %}
+				<span class="tab alpha-tab">
+					<span class="tab-name">{{ letter }}</span>
+					<div class="tab-content"></div>
+				</span>
+			{% endfor %}
+			</div>
+			<div class="tab-display"><p class="empty-tab">Select a tab above.</p></div>
+		</div>
+	</li>
+{% endfor %}
+</ul>
+
+{% endblock content-left %}
+
+{% block content-right %}
+<div class="search-column">
+	<div class="search-section">
+		<form class="search-users">{% csrf_token %}
+			<input type="text" name="search" id="search_string" />
+			<input type="submit" class="search-submit" value="Search" />
+		</form>
+	</div>
+	<div class="search-results">
+	</div>
+</div>
+{% endblock content-right %}
+
+{% block extra-script %}
+<script>
+
+$(document).ready(function(){
+	$.each($(".tabbed-list"), function(i, element){
+		make_tab(element);
+	});
+	
+	if(sessionStorage){
+		$(".user-grouper").each(function(i){
+			var grouper = $(this);
+			var key = grouper.text().toLowerCase();
+			var letter = sessionStorage.getItem(key);
+			var user_group = grouper.parents("li");
+			
+			user_group.find(".tab-name:contains('" + letter + "')").parents(".tab").click();
+		});
+	}
+});
+</script>
+{% endblock extra-script %}

@@ -1,0 +1,100 @@
+{% extends "siteadmin/siteadmin_two_columns.html" %}
+
+{% block title %}Administration - {{ course.shortname	}}{% endblock title %}
+
+{% block extra-js-head %}
+<script type="text/javascript" src="/site_media/js/admin/admin.js"></script>
+<script type="text/javascript" src="/site_media/js/admin/course.js"></script>
+{% endblock extra-js-head %}
+
+{% block sub-header %}
+<a href="../" class="back"><img src="/site_media/pics/left-arrow-small.png" /><span>Back</span></a>
+{% endblock sub-header %}
+
+{% block content-left %}
+<h1>{{ course.shortname }}</h1>
+<a href="print_grades/" class="print-grades">Print Grades</a>
+<p>{{ course }} - {{ course.term }}</p>
+
+<span class="course-id">{{ course.id }}</span>
+<div class="course-users-section">
+	<span class="user-header">Instructors</span>
+	<a href="" class="course-add-instructor add-user">Add Instructor</a>
+	<div class="tabbed-instructor-list tabbed-list">
+		<div class="tabs">
+		{% for letter in "ABCDEFGHIJKLMNOPRSTUVWXYZ" %}
+			<span class="tab alpha-tab">
+				<span class="tab-name">{{ letter }}</span>
+				<div class="tab-content"></div>
+			</span>
+		{% endfor %}
+		</div>
+		<div class="tab-display"><p class="empty-tab">Select a tab above.</p></div>
+	</div>
+	<ul class="admin-instructor-list course-user-list">
+	{% for instructor in course.instructors %}
+		<li class="course-user">
+			<span class="user-full-display">{{ instructor.last_name }}, {{ instructor.first_name }} ({{ instructor }})</span>
+		</li>
+	{% empty %}
+		<li class="empty-list">No instructors</li>
+	{% endfor %}
+	</ul>
+</div>
+
+<div class="course-users-section">
+	<span class="user-header">Students</span>
+	<a href="" class="course-add-student add-user">Add Student</a>
+	<div class="tabbed-student-list tabbed-list">
+		<div class="tabs">
+		{% for letter in "ABCDEFGHIJKLMNOPRSTUVWXYZ" %}
+			<span class="tab alpha-tab">
+				<span class="tab-name">{{ letter }}</span>
+				<div class="tab-content"></div>
+			</span>
+		{% endfor %}
+		</div>
+		<div class="tab-display"><p class="empty-tab">Select a tab above.</p></div>
+	</div>
+
+	<ul class="admin-student-list course-user-list">
+	{% for student in course.students %}
+		<li class="course-user">
+			<span class="user-full-display">{{ student.last_name }}, {{ student.first_name }} ({{ student }})</span>
+			{% if student.grade %}
+			- <span class="admin-grade">{{ student.grade }}</span>
+			{% endif %}
+		</li>
+	{% empty %}
+		<li class="empty-list">No students</li>
+	{% endfor %}
+	</ul>
+</div>
+{% endblock content-left %}
+
+{% block content-right %}
+<div class="update-course-section">
+	<h3>Update Course</h3>
+	<form class="update-course" method="post">{% csrf_token %}
+	{% for field in form %}
+		<div class="form-field">
+			{{ field.label_tag }} {{ field }}
+			{% for error in field.errors %}
+			<span class="error">{{ error }}</span>
+			{% endfor %}
+		</div>
+	{% endfor %}
+		<div class="form-field">
+			<input type="submit" value="Update" />
+		</div>
+	</form>
+</div>
+{% endblock content-right %}
+
+{% block extra-script %}
+<script>
+$(document).ready(function(){
+	make_tab($(".tabbed-list"));
+});
+</script>
+{% endblock extra-script %}

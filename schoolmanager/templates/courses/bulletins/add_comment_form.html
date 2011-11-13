@@ -1,0 +1,5 @@
+<form action="" method="post">
+{{ form.text.label_tag }}: {{ form.text }}<span class="text-errors">{% for error in form.text.errors %}{{ error.as_text }}{% endfor %}</span><br />
+<input type="submit" value="add" />
+<input type="hidden" name="bulletin_id" value=1 />
+</form>

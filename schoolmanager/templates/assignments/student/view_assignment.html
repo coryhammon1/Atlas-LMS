@@ -1,0 +1,133 @@
+{% extends "courses/course_two_columns.html" %}
+
+{% block title %}{{ request.course }} - {{ assignment }}{% endblock title %}
+
+{% block extra-js-head %}
+<script type="text/javascript" src="/site_media/js/student.js"></script>
+{% endblock extra-js-head %}
+
+{% block sub-header %}
+<a href="../" class="back"><img src="/site_media/pics/left-arrow-small.png" /><span>Back</span></a>
+{% endblock sub-header %}
+
+{% block content-left %}
+
+{% if errors %}
+<p class="assignment-submission-errors">Could not submit assignment.  Scroll down for more details.</p>
+{% endif %}
+
+<span class="assignment-name">{{ assignment }}</span>
+<br />	
+
+<span class="assignment-date">{{ assignment.due_date|date:"l, F j, Y \a\t P" }}</span>
+
+<p class="assignment-description">{{ assignment.description }}</p>
+
+
+{% ifequal submission.status 1 %}
+	{% if submission.comments %}
+	<div class="feedback-section">
+	<h3>Feedback</h3>
+	<p>{{ submission.comments }}</span>
+	</div>
+	{% endif %}
+{% endifequal %}
+
+{% ifequal assignment.type 's' %}
+	<form id="submit_form" class="assignment-submission" enctype="multipart/form-data" action="" method="post">{% csrf_token %}
+	{% if not due_date_expired %}
+		
+			<h3>Submit</h3>
+			<textarea name="submission-text" rows="10" cols="40">{{ submission.text }}</textarea><br />
+
+			<ul class="uploaded-files">
+			{% for file in files %}
+				<li class="uploaded-file">
+					<a href="{{ file.link }}" class="file-name">{{ file }}</a>
+					<span class="file-id">{{ file.id }}</span>
+					<a href="" class="delete-file">remove</a>
+				</li>
+			{% empty %}
+				<li class="no-uploaded-files">No previously submitted files</li>
+			{% endfor %}
+			</ul>
+
+			<ul class="upload-errors">
+			{% if errors %}
+				<p>The following files could not be uploaded:</p>
+				{% for name, error in errors.items %}
+				<li class="file-upload-error">{{ name }}: {{ error }}</li>
+				{% endfor %}
+			{% endif %}
+			</ul>
+
+			<p>Notice: Files cannot be more than {{ MAX_UPLOAD_FILE_SIZE|filesizeformat }}</p>
+			<ul class="file-uploads">
+				<li class="file-upload"><input type="file" name="file-1" /><a href="" class="add-upload-file">Add Another</a></li>
+			</ul>
+			<input type="submit" value="Submit" />
+		
+	{% else %}
+		<h3>Submission period has ended.</h3>
+		
+		{% if submission.text %}
+			<br />
+			<h4>Text</h4>
+			<p>{{ submission.text }}</p>
+		{% endif %}
+		
+		<br />
+		<h4>Files</h4>
+		<ul class="uploaded-files">
+		{% for file in files %}
+			<li class="uploaded-file"><a href="{{ file.link }}" class="file-name">{{ file }}</a></li>
+		{% empty %}
+			<li class="no-uploaded-files">No files submitted</li>
+		{% endfor %}
+		</ul>
+	{% endif %}
+	</form>
+{% endifequal %}
+
+{% ifequal assignment.type 'o' %}
+	{% if not due_date_expired %}
+		{% if quiz_submission.can_take %}
+		<a href="quiz/" class="take-quiz">Take Quiz ({{ quiz_submission.attempts_remaining }} attempt{{ quiz_submission.attempts_remaining|pluralize:"s" }} left)</a>
+		{% else %}
+		<h3>You have no more attempts left.</h3>
+		{% endif %}
+	{% else %}
+		<h3>Submission period has ended.</h3>
+	{% endif %}
+{% endifequal %}
+
+{% endblock content-left %}
+
+{% block content-right %}
+	{% if submission.grade %}
+	<div class="assignment-score-section">
+		<span class="assignment-grade">{{ submission.grade }}</span><br />
+		<span class="assignment-score">{{ submission.score }}/{{ assignment.get_possible_score }}</span>
+		{% if assignment.type == 'o' and not quiz_submission.can_take %}
+			<a href="quiz/results/" class="view-quiz-results">View Results</a>
+		{% endif %}
+	</div>
+	{% endif %}
+
+	<div class="resources-section" style="margin-top: 0">
+		<h3>Resources</h3>
+		<ul class="resources">
+		{% for resource in resources %}
+			<li class="resource">
+				{% if resource.notification_count > 0 %}
+				<span class="course-notification-count">{{ resource.notification_count }}</span>
+				{% endif %}
+				<span class="resource-name"><a href="resources/{{ resource.id }}/">{{ resource }}</a></span>
+				<span class="resource-id">{{ resource.id }}</span>
+			</li>
+		{% empty %}
+			<li>No resources</li>
+		{% endfor %}
+		</ul>
+	</div>
+{% endblock content-right %}

@@ -1,0 +1,129 @@
+{% extends "courses/course_two_columns.html" %}
+
+{% block title %}{{ request.course }} - Assignments{% endblock title %}
+
+{% block extra-js-head %}
+<script type="text/javascript" src="/site_media/js/instructor/all_assignments.js"></script>
+{% endblock extra-js-head %}
+
+{% block sub-header %}
+<a href="../" class="back"><img src="/site_media/pics/left-arrow-small.png" /><span>Back</span></a>
+{% endblock sub-header %}
+
+{% block content-left %}
+<p class="group-weights-error"></p>
+
+<ul id="group_list">
+{% for group in groups %}
+	<li class="group">
+		<div class="group-header">
+			<span class="group-name">{{ group.name }}</span>
+			<span class="group-id">{{ group.id }}</span>
+			{% if group.weight != None %}
+				<span class="group-weight-display">({{ group.weight }}%)</span>
+			{% endif %}
+			<span class="group-weight">{% if group.weight != None %}{{ group.weight }}{% endif %}</span>
+			<a href="" class="delete-group">delete</a>
+		</div>
+		
+		<a href='' class='add-assignment'>Add Assignment</a>
+		
+		<ul class="assignment-list">
+			{% for assignment in group.assignments %}
+				<li class="assignment">
+					{% if assignment.notification_count > 0 %}
+					<span class="course-notification-count">{{ assignment.notification_count }}</span>
+					{% endif %}
+					<span class="assignment-id">{{ assignment.id }}</span>
+					<a href="{{ assignment.id }}/" class="assignment-name {% if not assignment.is_viewable %}unviewable-assignment{% endif %}">{{ assignment }}</a> 
+					<span class="assignment-menu">
+						<a href="" class="delete-assignment">delete</a>
+					</span>
+				</li>
+			{% empty %}
+				<li class="no-assignments">No assignments...</li>
+			{% endfor %}
+		</ul>
+	</li>
+{% empty %}
+	<li class="no-groups">Before you add an assignment, you must add a group.</li>
+{% endfor %}
+</ul>
+
+<div id="add_group_section">
+	<form id="add_group_form" class="add-group-form" method="post">{% csrf_token %}
+	{% for field in group_form %}
+		<div class="group-field-section">
+		{{ field.label_tag }}
+		{{ field }}{% if field.name == 'weight' %}%{% endif %} <span class="group-{{ field.name }}-error"></span>
+		<span class="group-help-text">{{ field.help_text }}</span>
+		</div>
+	{% endfor %}
+		<div><input type="submit" value="Add Group" /></div>
+	</form>
+</div>
+
+<div class="add-assignment-form-section" style="display: none">
+<form action="" method="post" class="add-assignment-form">{% csrf_token %}
+			{% for field in blank_assignment_form.visible_fields %}
+		<div class="form-field">
+			<label>{{ field.label_tag }}</label>
+			{{ field }}
+			<span class="assignment-{{ field.name }}-errors form-error"></span>
+		</div>
+	{% endfor %}
+	{% for field in assignment_form.hidden_fields %}
+		{{ field }}
+	{% endfor %}
+			<div class="form-field"><input type="submit" value="Add Assignment" /></div>
+
+			<div style="display: none;"><input type="hidden" name="group_id" /></div>
+		</form>
+</div>
+
+{% endblock content-left %}
+
+{% block content-right %}
+<div class="course-grades">
+	<a href="/courses/{{ request.course.get_url }}/print_grades/" class="print_grades">Print</a>
+	<h3>Grades</h3>
+	<div class="course-grades-scroll">
+		<table class="course-grades">
+		{% for student in grades|dictsort:"last_name" %}
+			<tr>
+				<td><ul><li>{{ student.last_name }}, {{ student.first_name }}</li></ul></td>
+				<td class="grade-display">{{ student.letter_grade }} <span class="grade-percentage">({{ student.percentage }}%)</td>
+			</tr>
+		{% endfor %}
+		</table>
+	</div>
+</div>
+
+<div class="grading-scale-section">
+	<h3>Grading Scale</h3>
+	<form action="" method="post" class="grading-scale">{% csrf_token %}
+		<table>
+			<tr><th>Grade</td><th>Cut-Off</td></tr>
+			{% for field in scale_form %}
+			<tr>
+				<td>{{ field.label_tag }}</td><td class="scale-field">{{ field }}</td>
+				<td>{{ field.help_text }}</td>
+				{% for error in field.errors %}
+				<td>{{ error }}</td>
+				{% endfor %}
+			</tr>
+			{% endfor %}
+		</table>
+		<input type="submit" value="Change" />
+		<input type="hidden" name="form_name" value="scale" />
+	</form>
+</div>
+{% endblock content-right %}
+
+{% block extra-script %}
+<script>
+$(document).ready(function(){
+	//display_average_grades();
+});
+</script>
+{% endblock extra-script %}

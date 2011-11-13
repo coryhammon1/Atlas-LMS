@@ -1,0 +1,96 @@
+{% load listextensions %}
+{% load filterextensions %}
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html>
+<head>
+
+<title>{% block title %}Add Title{% endblock title %}</title>
+
+<!--[if lt IE 7.]>
+<script defer type="text/javascript" src="/site_media/js/pngfix.js"></script>
+<![endif]-->
+
+<script type="text/javascript" src="/site_media/js/jquery.min.js"></script>
+<script type="text/javascript" src="/site_media/js/jquery-ui.min.js"></script>
+<script type="text/javascript" src="/site_media/js/util.js"></script>
+{% block extra-js-head %}{% endblock extra-js-head %}
+
+<link rel="stylesheet" href="/site_media/css/redmond/jquery-ui-1.8.1.custom.css" type="text/css" media="screen" />
+<link rel="stylesheet" href="/site_media/css/base.css" type="text/css" media="screen" />
+<!--[if lt IE 8]>
+<link rel="stylesheet" href="/site_media/css/iefix.css" type="text/css" media="screen" />
+<![endif]-->
+<!--[if lt IE 7]>
+<link rel="stylesheet" href="/site_media/css/ie6fix.css" type="text/css" media="screen" />
+<![endif]-->
+{% block extra-style %}{% endblock extra-style %}
+</head>
+
+<body>
+<div class="header-wrapper">
+	<div class="header">
+		<div class="header-left">
+			<a class="site-title" href="/">Westminster College Atlas</a>
+			<span class="current-course">
+				{% if request.course %}
+				<a href="/courses/{{ request.course.get_url }}/" class="current-course-outer">
+					<span class="current-course-inner">{{ request.course|truncatecharacters:30 }}</span>
+				</a>
+				{% endif %}
+			</span>
+		</div>
+		
+		<div class="header-right">
+			{% if user.is_authenticated %}
+			<span class="user-info"><a class="user-name" href="/profile/">{{ request.user.get_full_name }}</a><a href="/logout/">logout</a></span>
+			<span class="user-is-admin-or-staff">{{ request.user.is_admin }}{{ request.user.is_staff }}</span>
+			
+			<div class="course-tabs-wrapper">
+			<span id="course-tabs" class="course-tabs">
+			{% block course-tabs %}
+				{% for course in user.current_courses|remove:request.course %}
+					<span class="course-tab {% if forloop.first %}first-course-tab{% endif %}">
+					<a href="/courses/{{ course.get_url }}/">{{ course.shortname }}</a>
+					{% if course.notification_count > 0 %}
+					<span class="course-notification-count">{{ course.notification_count }}</span>
+					{% endif %}
+					</span>
+				{% endfor %}
+			{% endblock course-tabs %}
+			</span>
+			<span id="tabs-menu-image" class="tabs-menu">
+				<div id="menu-clear-cover" class="clear-cover"></div>
+				<div id="extra-tabs" class="extra-tabs"></div>
+			</span>
+			
+			</div>
+			{% endif %}
+		</div>
+		<div class="header-footer"></div>
+	</div>
+</div>
+<div class="sub-header">
+{% block sub-header %}{% endblock sub-header %}
+</div>
+
+{% if messages %}
+<div class="messages">
+	<ul class="message-list">
+	{% for message in messages %}
+		<li class="message">{{ message }}</li>	
+	{% endfor %}
+	</ul>
+</div>
+{% endif %}
+
+<div class="content">
+	{% block content %}{% endblock content %}
+	<div class="content-footer"></div>
+</div>
+
+<div class="footer">{% block footer %}{% endblock footer %}</div>
+
+{% block extra-script %}{% endblock extra-script %}
+</body>
+</html>

@@ -1,0 +1,52 @@
+{% extends "courses/course_two_columns.html" %}
+
+{% block title %}{{ request.course }} - Assignments{% endblock title %}
+
+{% block sub-header %}
+<a href="../" class="back"><img src="/site_media/pics/left-arrow-small.png" /><span>Back</span></a>
+{% endblock sub-header %}
+
+{% block content-left %}
+<ul id="group_list">
+{% for group in groups %}
+	<li class="group">
+		<span class="group-name">{{ group.name }}</span>
+		{% if group.weight != None %}
+		<span class="group-weight-display">({{ group.weight }}%)</span>
+		{% endif %}
+		<ul class="assignment-list">
+			{% for assignment in group.assignments %}
+				{% if assignment.is_viewable %}
+					<li class="assignment">
+						{% if assignment.notification_count > 0 %}
+						<span class="course-notification-count">{{ assignment.notification_count }}</span>
+						{% endif %}
+						<a class="assignment-name" href="{{ assignment.get_url }}">{{ assignment }}</a>
+					</li>
+				{% endif %}
+			{% empty %}
+				<li class="no-assignments">No assignments...</li>
+			{% endfor %}
+		</ul>
+	</li>
+{% empty %}
+	<li>No assignments...</li>
+{% endfor %}
+</ul>
+
+{% endblock content-left %}
+
+{% block content-right %}
+<div class="upcoming">
+	<h3>Upcoming</h3>
+	<div class="ajax-call-loading">
+		<img src="/site_media/pics/ajax-loader.gif" />
+	</div>
+</div>
+{% endblock content-right %}
+
+{% block extra-script %}
+<script>
+load_upcoming_data($(".upcoming"));
+</script>
+{% endblock extra-script %}
