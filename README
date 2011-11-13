@@ -1,7 +1,11 @@
 Description
 
-Atlas-LMS is learning management software built off of django.  It provides functionality for students, teachers, and administrators.  Some functionality includes posting, submitting, and grading assignments; assigning teachers and students to new courses; and taking and submitting online quizzes.
+Atlas-LMS is learning management software built off of django.  It provides
+functionality for students, teachers, and administrators.  Some functionality
+includes posting, submitting, and grading assignments; assigning teachers and
+students to new courses; and taking and submitting online quizzes.
 
 Usage
 
 Start the development server with "python manage.py runserver"
+
