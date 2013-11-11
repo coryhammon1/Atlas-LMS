@@ -17,6 +17,9 @@ DATABASES = {
 		'ENGINE': 'django.db.backends.sqlite3',
 	}
 }
+
+DATABASE_ENGINE = 'django.db.backends.sqlite3'
+
 """
 DATABASES = {
 	'default': {
@@ -84,7 +87,7 @@ MIDDLEWARE_CLASSES = (
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
 #	'middleware.CacheAuthenticationMiddleware',
-	'django.middleware.csrf.CsrfViewMiddleware',
+#	'django.middleware.csrf.CsrfViewMiddleware',
 #	'django.middleware.csrf.CsrfResponseMiddleware',
 	'django.contrib.messages.middleware.MessageMiddleware',
 	'schoolmanager.profiling.middleware.ProfileMiddleware',

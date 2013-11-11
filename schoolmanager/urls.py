@@ -28,5 +28,5 @@ urlpatterns = patterns('',
 if settings.DEBUG:
 	urlpatterns += patterns('',
 		(r'^%s(?P<path>.*)$' % settings.MEDIA_URL, 'django.views.static.serve', {'document_root': settings.MEDIA_ROOT}),
-		(r'^sentry/', include('sentry.urls')),
+#		(r'^sentry/', include('sentry.urls')),
 	)
